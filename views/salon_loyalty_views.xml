@@ -1,0 +1,79 @@
+<odoo>
+    <record id="salon_loyalty_search" model="ir.ui.view">
+        <field name="name">salon.loyalty.ledger.search</field>
+        <field name="model">salon.loyalty.ledger</field>
+        <field name="arch" type="xml">
+            <search string="Search Loyalty Ledger">
+                <field name="partner_id"/>
+                <field name="booking_id"/>
+                <field name="reason"/>
+                <field name="move_dt"/>
+                <filter name="earn" string="Earned" domain="[('reason', '=', 'earn')]"/>
+                <filter name="redeem" string="Redeemed" domain="[('reason', '=', 'redeem')]"/>
+                <filter name="refund" string="Refund" domain="[('reason', '=', 'refund')]"/>
+                <separator/>
+                <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>
+                <filter name="group_reason" string="Reason" context="{'group_by': 'reason'}"/>
+                <filter name="group_day" string="Day" context="{'group_by': 'move_dt:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="salon_loyalty_action" model="ir.actions.act_window">
+        <field name="name">Loyalty</field>
+        <field name="res_model">salon.loyalty.ledger</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="salon_loyalty_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Track loyalty movements
+            </p>
+            <p>
+                Review earned, redeemed, refunded, and manual loyalty adjustments.
+            </p>
+        </field>
+    </record>
+
+    <record id="salon_loyalty_view_list" model="ir.ui.view">
+        <field name="name">salon.loyalty.ledger.list</field>
+        <field name="model">salon.loyalty.ledger</field>
+        <field name="arch" type="xml">
+            <list decoration-success="points &gt; 0" decoration-muted="points &lt; 0">
+                <field name="move_dt"/>
+                <field name="partner_id"/>
+                <field name="booking_id"/>
+                <field name="reason" widget="badge"/>
+                <field name="points"/>
+                <field name="ref"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="salon_loyalty_view_form" model="ir.ui.view">
+        <field name="name">salon.loyalty.ledger.form</field>
+        <field name="model">salon.loyalty.ledger</field>
+        <field name="arch" type="xml">
+            <form string="Loyalty Ledger Entry">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="booking_id"/>
+                            <field name="reason"/>
+                        </group>
+                        <group>
+                            <field name="move_dt"/>
+                            <field name="points"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="ref"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

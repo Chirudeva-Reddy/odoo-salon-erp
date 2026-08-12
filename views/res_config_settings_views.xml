@@ -1,0 +1,29 @@
+<odoo>
+    <record id="res_config_settings_view_form_salon" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.salon</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='general_settings']" position="inside">
+                <block title="Salon" id="salon_settings" groups="salon_erp.group_salon_manager">
+                    <setting string="Loyalty Point Value" help="Monetary value of one loyalty point when points are redeemed.">
+                        <field name="salon_point_value"/>
+                    </setting>
+                    <setting string="Reminder Lead Time" help="Hours before the appointment reserved for future reminder automation.">
+                        <field name="salon_reminder_hours"/>
+                    </setting>
+                    <setting string="Operational Shortcuts" help="Open the main salon configuration records.">
+                        <div class="content-group">
+                            <div class="mt8">
+                                <button type="action" name="%(salon_erp.salon_service_action)d" string="Manage Services" icon="oi-arrow-right" class="btn-link"/>
+                            </div>
+                            <div class="mt8">
+                                <button type="action" name="%(salon_erp.salon_staff_action)d" string="Manage Staff" icon="oi-arrow-right" class="btn-link"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,15 @@
+<odoo>
+    <menuitem id="salon_menu_root" name="Salon" groups="salon_erp.group_salon_user,salon_erp.group_salon_staff"/>
+
+    <menuitem id="salon_menu_operations" name="Operations" parent="salon_menu_root" groups="salon_erp.group_salon_user,salon_erp.group_salon_staff"/>
+    <menuitem id="salon_menu_settings" name="Settings" parent="salon_menu_root" groups="salon_erp.group_salon_manager"/>
+
+    <menuitem id="salon_menu_bookings" name="Bookings" parent="salon_menu_operations" action="salon_booking_action" groups="salon_erp.group_salon_user,salon_erp.group_salon_staff"/>
+    <menuitem id="salon_menu_customers" name="Customers" parent="salon_menu_operations" action="salon_customer_action" groups="salon_erp.group_salon_user,salon_erp.group_salon_manager"/>
+    <menuitem id="salon_menu_loyalty" name="Loyalty" parent="salon_menu_operations" action="salon_loyalty_action" groups="salon_erp.group_salon_user,salon_erp.group_salon_manager"/>
+    <menuitem id="salon_menu_reporting" name="Reporting" parent="salon_menu_operations" action="salon_booking_reporting_action" groups="salon_erp.group_salon_manager"/>
+
+    <menuitem id="salon_menu_services" name="Services" parent="salon_menu_settings" action="salon_service_action"/>
+    <menuitem id="salon_menu_service_categories" name="Service Categories" parent="salon_menu_settings" action="salon_service_category_action"/>
+    <menuitem id="salon_menu_staff" name="Staff" parent="salon_menu_settings" action="salon_staff_action"/>
+</odoo>

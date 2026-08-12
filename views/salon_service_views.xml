@@ -1,0 +1,140 @@
+<odoo>
+    <record id="salon_service_category_action" model="ir.actions.act_window">
+        <field name="name">Service Categories</field>
+        <field name="res_model">salon.service.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new service category
+            </p>
+            <p>
+                Organize salon services with simple categories and sequence ordering.
+            </p>
+        </field>
+    </record>
+
+    <record id="salon_service_category_view_list" model="ir.ui.view">
+        <field name="name">salon.service.category.list</field>
+        <field name="model">salon.service.category</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="service_count"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="salon_service_category_view_form" model="ir.ui.view">
+        <field name="name">salon.service.category.form</field>
+        <field name="model">salon.service.category</field>
+        <field name="arch" type="xml">
+            <form string="Service Category">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_services" type="object" class="oe_stat_button" icon="fa-scissors">
+                            <field name="service_count" widget="statinfo" string="Services"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Hair"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="salon_service_search" model="ir.ui.view">
+        <field name="name">salon.service.search</field>
+        <field name="model">salon.service</field>
+        <field name="arch" type="xml">
+            <search string="Search Services">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <filter name="active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>
+                <filter name="group_company" string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="salon_service_action" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">salon.service</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="salon_service_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a salon service
+            </p>
+            <p>
+                Configure duration, price, and fixed loyalty points for each service.
+            </p>
+        </field>
+    </record>
+
+    <record id="salon_service_view_list" model="ir.ui.view">
+        <field name="name">salon.service.list</field>
+        <field name="model">salon.service</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="duration_min"/>
+                <field name="price"/>
+                <field name="loyalty_points"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="salon_service_view_form" model="ir.ui.view">
+        <field name="name">salon.service.form</field>
+        <field name="model">salon.service</field>
+        <field name="arch" type="xml">
+            <form string="Salon Service">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Haircut"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="category_id"/>
+                            <field name="duration_min"/>
+                            <field name="price"/>
+                        </group>
+                        <group>
+                            <field name="loyalty_points"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Describe what this service includes."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,252 @@
+<odoo>
+    <record id="salon_category_hair" model="salon.service.category">
+        <field name="name">Hair</field>
+        <field name="sequence">1</field>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="salon_category_spa" model="salon.service.category">
+        <field name="name">Spa</field>
+        <field name="sequence">2</field>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="salon_service_cut" model="salon.service">
+        <field name="name">Signature Haircut</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="category_id" ref="salon_category_hair"/>
+        <field name="duration_min">45</field>
+        <field name="price">35</field>
+        <field name="loyalty_points">10</field>
+        <field name="description">Cut, wash, and finish.</field>
+    </record>
+
+    <record id="salon_service_color" model="salon.service">
+        <field name="name">Color Refresh</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="category_id" ref="salon_category_hair"/>
+        <field name="duration_min">90</field>
+        <field name="price">80</field>
+        <field name="loyalty_points">18</field>
+        <field name="description">Single-process color refresh.</field>
+    </record>
+
+    <record id="salon_service_facial" model="salon.service">
+        <field name="name">Glow Facial</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="category_id" ref="salon_category_spa"/>
+        <field name="duration_min">60</field>
+        <field name="price">55</field>
+        <field name="loyalty_points">14</field>
+        <field name="description">A one-hour facial treatment.</field>
+    </record>
+
+    <record id="salon_partner_anna" model="res.partner">
+        <field name="name">Anna Reed</field>
+        <field name="phone">5551001</field>
+        <field name="email">anna@example.com</field>
+    </record>
+
+    <record id="salon_partner_noah" model="res.partner">
+        <field name="name">Noah Lane</field>
+        <field name="phone">5551002</field>
+        <field name="email">noah@example.com</field>
+    </record>
+
+    <record id="salon_partner_emma" model="res.partner">
+        <field name="name">Emma Park</field>
+        <field name="phone">5551003</field>
+        <field name="email">emma@example.com</field>
+    </record>
+
+    <record id="salon_partner_liam" model="res.partner">
+        <field name="name">Liam Fox</field>
+        <field name="phone">5551004</field>
+        <field name="email">liam@example.com</field>
+    </record>
+
+    <record id="salon_partner_mia" model="res.partner">
+        <field name="name">Mia Hart</field>
+        <field name="phone">5551005</field>
+        <field name="email">mia@example.com</field>
+    </record>
+
+    <record id="salon_staff_maya" model="salon.staff">
+        <field name="name">Maya Collins</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="user_id" ref="base.user_admin"/>
+        <field name="resource_calendar_id" ref="resource.resource_calendar_std"/>
+        <field name="color">2</field>
+        <field name="service_ids" eval="[(6, 0, [ref('salon_service_cut'), ref('salon_service_facial')])]"/>
+    </record>
+
+    <record id="salon_staff_lee" model="salon.staff">
+        <field name="name">Lee Morgan</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="resource_calendar_id" ref="resource.resource_calendar_std"/>
+        <field name="color">5</field>
+        <field name="service_ids" eval="[(6, 0, [ref('salon_service_cut'), ref('salon_service_color')])]"/>
+    </record>
+
+    <record id="salon_booking_demo_1" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_anna"/>
+        <field name="staff_id" ref="salon_staff_maya"/>
+        <field name="start_dt">2026-04-07 09:00:00</field>
+        <field name="state">draft</field>
+    </record>
+
+    <record id="salon_booking_demo_2" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_noah"/>
+        <field name="staff_id" ref="salon_staff_lee"/>
+        <field name="start_dt">2026-04-07 10:30:00</field>
+        <field name="state">confirmed</field>
+    </record>
+
+    <record id="salon_booking_demo_3" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_emma"/>
+        <field name="staff_id" ref="salon_staff_maya"/>
+        <field name="start_dt">2026-04-07 12:00:00</field>
+        <field name="state">confirmed</field>
+    </record>
+
+    <record id="salon_booking_demo_4" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_liam"/>
+        <field name="staff_id" ref="salon_staff_lee"/>
+        <field name="start_dt">2026-04-07 14:00:00</field>
+        <field name="state">in_service</field>
+    </record>
+
+    <record id="salon_booking_demo_5" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_mia"/>
+        <field name="staff_id" ref="salon_staff_maya"/>
+        <field name="start_dt">2026-04-06 09:30:00</field>
+        <field name="state">done</field>
+        <field name="payment_state">paid</field>
+        <field name="has_loyalty_earned">True</field>
+    </record>
+
+    <record id="salon_booking_demo_6" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_anna"/>
+        <field name="staff_id" ref="salon_staff_lee"/>
+        <field name="start_dt">2026-04-05 11:00:00</field>
+        <field name="state">done</field>
+        <field name="payment_state">paid</field>
+        <field name="has_loyalty_earned">True</field>
+    </record>
+
+    <record id="salon_booking_demo_7" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_emma"/>
+        <field name="staff_id" ref="salon_staff_maya"/>
+        <field name="start_dt">2026-04-04 13:00:00</field>
+        <field name="state">canceled</field>
+        <field name="canceled_at">2026-04-04 10:30:00</field>
+        <field name="cancel_reason">Customer rescheduled.</field>
+    </record>
+
+    <record id="salon_booking_demo_8" model="salon.booking">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_noah"/>
+        <field name="staff_id" ref="salon_staff_lee"/>
+        <field name="start_dt">2026-04-03 16:00:00</field>
+        <field name="state">no_show</field>
+        <field name="canceled_at">2026-04-03 17:00:00</field>
+        <field name="cancel_reason">Customer did not arrive.</field>
+    </record>
+
+    <record id="salon_booking_demo_1_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_1"/>
+        <field name="service_id" ref="salon_service_cut"/>
+        <field name="qty">1</field>
+        <field name="duration_min">45</field>
+        <field name="price_unit">35</field>
+    </record>
+
+    <record id="salon_booking_demo_2_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_2"/>
+        <field name="service_id" ref="salon_service_color"/>
+        <field name="qty">1</field>
+        <field name="duration_min">90</field>
+        <field name="price_unit">80</field>
+    </record>
+
+    <record id="salon_booking_demo_3_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_3"/>
+        <field name="service_id" ref="salon_service_facial"/>
+        <field name="qty">1</field>
+        <field name="duration_min">60</field>
+        <field name="price_unit">55</field>
+    </record>
+
+    <record id="salon_booking_demo_4_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_4"/>
+        <field name="service_id" ref="salon_service_cut"/>
+        <field name="qty">1</field>
+        <field name="duration_min">45</field>
+        <field name="price_unit">35</field>
+    </record>
+
+    <record id="salon_booking_demo_5_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_5"/>
+        <field name="service_id" ref="salon_service_facial"/>
+        <field name="qty">1</field>
+        <field name="duration_min">60</field>
+        <field name="price_unit">55</field>
+    </record>
+
+    <record id="salon_booking_demo_6_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_6"/>
+        <field name="service_id" ref="salon_service_cut"/>
+        <field name="qty">1</field>
+        <field name="duration_min">45</field>
+        <field name="price_unit">35</field>
+    </record>
+
+    <record id="salon_booking_demo_7_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_7"/>
+        <field name="service_id" ref="salon_service_color"/>
+        <field name="qty">1</field>
+        <field name="duration_min">90</field>
+        <field name="price_unit">80</field>
+    </record>
+
+    <record id="salon_booking_demo_8_line_1" model="salon.booking.line">
+        <field name="booking_id" ref="salon_booking_demo_8"/>
+        <field name="service_id" ref="salon_service_cut"/>
+        <field name="qty">1</field>
+        <field name="duration_min">45</field>
+        <field name="price_unit">35</field>
+    </record>
+
+    <record id="salon_loyalty_demo_1" model="salon.loyalty.ledger">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_mia"/>
+        <field name="booking_id" ref="salon_booking_demo_5"/>
+        <field name="points">14</field>
+        <field name="reason">earn</field>
+        <field name="ref">Demo earned points</field>
+    </record>
+
+    <record id="salon_loyalty_demo_2" model="salon.loyalty.ledger">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_anna"/>
+        <field name="booking_id" ref="salon_booking_demo_6"/>
+        <field name="points">10</field>
+        <field name="reason">earn</field>
+        <field name="ref">Demo earned points</field>
+    </record>
+
+    <record id="salon_loyalty_demo_3" model="salon.loyalty.ledger">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="partner_id" ref="salon_partner_anna"/>
+        <field name="points">5</field>
+        <field name="reason">adjust</field>
+        <field name="ref">Welcome bonus</field>
+    </record>
+</odoo>

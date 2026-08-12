@@ -1,0 +1,81 @@
+<odoo>
+    <record id="salon_staff_search" model="ir.ui.view">
+        <field name="name">salon.staff.search</field>
+        <field name="model">salon.staff</field>
+        <field name="arch" type="xml">
+            <search string="Search Staff">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="service_ids"/>
+                <filter name="active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="group_company" string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="salon_staff_action" model="ir.actions.act_window">
+        <field name="name">Staff</field>
+        <field name="res_model">salon.staff</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="salon_staff_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a staff profile
+            </p>
+            <p>
+                Link staff members to working hours, internal users, and service skills.
+            </p>
+        </field>
+    </record>
+
+    <record id="salon_staff_view_list" model="ir.ui.view">
+        <field name="name">salon.staff.list</field>
+        <field name="model">salon.staff</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="service_ids" widget="many2many_tags"/>
+                <field name="booking_count"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="salon_staff_view_form" model="ir.ui.view">
+        <field name="name">salon.staff.form</field>
+        <field name="model">salon.staff</field>
+        <field name="arch" type="xml">
+            <form string="Salon Staff">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bookings" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="booking_count" widget="statinfo" string="Bookings"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Maya"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="resource_calendar_id"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                        <group>
+                            <field name="service_ids" widget="many2many_tags"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

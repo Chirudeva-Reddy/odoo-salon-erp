@@ -1,0 +1,221 @@
+<odoo>
+    <record id="salon_booking_search" model="ir.ui.view">
+        <field name="name">salon.booking.search</field>
+        <field name="model">salon.booking</field>
+        <field name="arch" type="xml">
+            <search string="Search Bookings">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="staff_id"/>
+                <field name="payment_state"/>
+                <field name="state"/>
+                <field name="start_dt"/>
+                <filter name="today" string="Today" domain="[('start_dt', '&gt;=', context_today()), ('start_dt', '&lt;', context_today() + relativedelta(days=1))]"/>
+                <filter name="upcoming" string="Upcoming" domain="[('start_dt', '&gt;=', context_today())]"/>
+                <filter name="needs_payment" string="Needs Payment" domain="[('payment_state', '=', 'unpaid'), ('state', 'not in', ('canceled', 'no_show'))]"/>
+                <filter name="my_bookings" string="My Bookings" domain="[('staff_id.user_id', '=', uid)]"/>
+                <filter name="canceled" string="Canceled" domain="[('state', 'in', ('canceled', 'no_show'))]"/>
+                <separator/>
+                <filter name="booking_date" string="Start Date" date="start_dt"/>
+                <separator/>
+                <filter name="group_staff" string="Staff" context="{'group_by': 'staff_id'}"/>
+                <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                <filter name="group_day" string="Day" context="{'group_by': 'start_dt:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="salon_booking_action" model="ir.actions.act_window">
+        <field name="name">Bookings</field>
+        <field name="res_model">salon.booking</field>
+        <field name="view_mode">list,form,kanban,calendar</field>
+        <field name="search_view_id" ref="salon_booking_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a salon booking
+            </p>
+            <p>
+                Plan appointments, assign staff, and track loyalty with the same flow used in the estate tutorial.
+            </p>
+        </field>
+    </record>
+
+    <record id="salon_booking_view_list" model="ir.ui.view">
+        <field name="name">salon.booking.list</field>
+        <field name="model">salon.booking</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state in ('confirmed', 'in_service', 'done')" decoration-muted="state in ('canceled', 'no_show')" decoration-bf="payment_state == 'paid'">
+                <field name="name"/>
+                <field name="start_dt"/>
+                <field name="end_dt"/>
+                <field name="partner_id"/>
+                <field name="staff_id"/>
+                <field name="amount_total"/>
+                <field name="payment_state" widget="badge"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="salon_booking_view_form" model="ir.ui.view">
+        <field name="name">salon.booking.form</field>
+        <field name="model">salon.booking</field>
+        <field name="arch" type="xml">
+            <form string="Salon Booking">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm" class="oe_highlight" invisible="state != 'draft'" groups="salon_erp.group_salon_user,salon_erp.group_salon_manager"/>
+                    <button name="action_check_in" type="object" string="Check In" invisible="state != 'confirmed'" groups="salon_erp.group_salon_user,salon_erp.group_salon_staff,salon_erp.group_salon_manager"/>
+                    <button name="action_done" type="object" string="Complete" invisible="state != 'in_service'" groups="salon_erp.group_salon_user,salon_erp.group_salon_staff,salon_erp.group_salon_manager"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ('draft', 'confirmed', 'in_service')" groups="salon_erp.group_salon_user,salon_erp.group_salon_manager"/>
+                    <button name="action_no_show" type="object" string="No-Show" invisible="state not in ('confirmed', 'in_service')" groups="salon_erp.group_salon_manager"/>
+                    <button name="action_mark_paid" type="object" string="Mark Paid" invisible="payment_state != 'unpaid' or state in ('canceled', 'no_show')" groups="salon_erp.group_salon_user,salon_erp.group_salon_manager"/>
+                    <button name="action_mark_refunded" type="object" string="Mark Refunded" invisible="payment_state != 'paid'" groups="salon_erp.group_salon_user,salon_erp.group_salon_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_service,done,canceled,no_show"/>
+                </header>
+                <sheet>
+                    <field name="company_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="has_loyalty_redeemed" invisible="1"/>
+                    <field name="has_loyalty_earned" invisible="1"/>
+                    <field name="has_redemption_restored" invisible="1"/>
+                    <field name="has_earn_refunded" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_loyalty_ledger" type="object" class="oe_stat_button" icon="fa-star" groups="salon_erp.group_salon_user,salon_erp.group_salon_manager">
+                            <field name="loyalty_ledger_count" widget="statinfo" string="Loyalty"/>
+                        </button>
+                        <button name="action_view_customer_bookings" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="customer_booking_count" widget="statinfo" string="Bookings"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="phone" readonly="1"/>
+                            <field name="staff_id"/>
+                        </group>
+                        <group>
+                            <field name="start_dt"/>
+                            <field name="end_dt" readonly="1"/>
+                            <field name="total_duration_min" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Services">
+                            <field name="service_line_ids" readonly="state in ('done', 'canceled', 'no_show')">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="service_id"/>
+                                    <field name="qty"/>
+                                    <field name="duration_min"/>
+                                    <field name="price_unit"/>
+                                    <field name="discount_pct"/>
+                                    <field name="subtotal" readonly="1"/>
+                                    <field name="notes"/>
+                                    <button name="action_reload_service_defaults" type="object" icon="fa-refresh" string="Reload" invisible="not service_id"/>
+                                </list>
+                                <form string="Booking Line">
+                                    <group>
+                                        <group>
+                                            <field name="service_id"/>
+                                            <field name="qty"/>
+                                            <field name="duration_min"/>
+                                        </group>
+                                        <group>
+                                            <field name="price_unit"/>
+                                            <field name="discount_pct"/>
+                                            <field name="subtotal" readonly="1"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <field name="notes"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Payment">
+                            <group>
+                                <group>
+                                    <field name="payment_state" readonly="1"/>
+                                    <field name="payment_ref"/>
+                                </group>
+                                <group>
+                                    <field name="amount_untaxed" readonly="1"/>
+                                    <field name="loyalty_redemption_value" readonly="1"/>
+                                    <field name="amount_total" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Loyalty">
+                            <group>
+                                <group>
+                                    <field name="loyalty_points_redeemed" readonly="state != 'draft'"/>
+                                    <field name="loyalty_points_earned" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="partner_id" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <group>
+                                <field name="note" placeholder="Add booking notes..."/>
+                                <field name="cancel_reason" readonly="state not in ('canceled', 'no_show')"/>
+                                <field name="canceled_at" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="salon_booking_view_kanban" model="ir.ui.view">
+        <field name="name">salon.booking.kanban</field>
+        <field name="model">salon.booking</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" records_draggable="false">
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click d-flex flex-column gap-1">
+                            <div class="fw-bold">
+                                <field name="name"/>
+                            </div>
+                            <div>
+                                <field name="start_dt"/>
+                            </div>
+                            <div>
+                                <field name="partner_id"/>
+                            </div>
+                            <div>
+                                <field name="staff_id"/>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <field name="amount_total" widget="monetary"/>
+                                <field name="payment_state" widget="badge"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="salon_booking_view_calendar" model="ir.ui.view">
+        <field name="name">salon.booking.calendar</field>
+        <field name="model">salon.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Bookings" date_start="start_dt" date_stop="end_dt" color="staff_id">
+                <field name="partner_id"/>
+                <field name="staff_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+</odoo>

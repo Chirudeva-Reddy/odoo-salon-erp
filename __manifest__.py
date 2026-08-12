@@ -1,0 +1,27 @@
+{
+    "name": "Salon ERP",
+    "version": "19.0.1.0.0",
+    "summary": "Salon booking and loyalty management",
+    "category": "Services",
+    "author": "OpenAI",
+    "depends": ["base", "mail", "resource"],
+    "application": True,
+    "license": "LGPL-3",
+    "data": [
+        "security/salon_security.xml",
+        "security/ir.model.access.csv",
+        "data/ir_sequence_data.xml",
+        "views/salon_service_views.xml",
+        "views/salon_staff_views.xml",
+        "views/salon_booking_views.xml",
+        "views/salon_loyalty_views.xml",
+        "views/res_partner_views.xml",
+        "views/res_config_settings_views.xml",
+        "views/salon_dashboard_views.xml",
+        "views/salon_menus.xml",
+    ],
+    "demo": [
+        "demo/demo.xml",
+    ],
+    "installable": True,
+}
