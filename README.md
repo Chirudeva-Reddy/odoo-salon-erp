@@ -44,8 +44,10 @@ addons_path = /path/to/custom_addons,/path/to/odoo/addons
 ```
 
 ```bash
-./odoo-bin -c odoo.conf -d yourdb -i salon_erp --stop-after-init
+./odoo-bin -c odoo.conf -d yourdb -i salon_erp --with-demo --stop-after-init
 ```
+
+Drop `--with-demo` for a clean database — Odoo 19 omits demo data by default.
 
 Or install from the UI: enable Developer Mode → **Apps** → **Update Apps List** → search **Salon ERP**.
 
@@ -67,6 +69,37 @@ Requires Odoo **19.0** (Community or Enterprise). Depends on `base`, `mail`, `re
 | 🔔 **Reminders** | An hourly cron notifies customers whose confirmed appointment falls inside the configured lead time. |
 | 📊 **Reporting** | Graph and pivot views over volume, revenue and loyalty output by staff and state. |
 | 🏢 **Multi-company** | Every model is company-scoped, with record rules and cross-company validation. |
+
+---
+
+## Screens
+
+Captured from this module running on Odoo 19 with its demo data.
+
+**Bookings** — every state in one list, with payment and status badges. Confirmed, in-service and done bookings are highlighted; cancellations and no-shows are muted.
+
+<img src="docs/screenshots/bookings-list.png" alt="Salon bookings list showing eight demo bookings with payment and state badges" width="100%"/>
+
+**A booking** — the workflow buttons are the guarded methods from the state machine above, next to the service lines, the loyalty stat button and the chatter.
+
+<img src="docs/screenshots/booking-form.png" alt="Booking form for BK2609-0002 showing workflow buttons, status bar, service line and chatter" width="100%"/>
+
+**Calendar and pipeline** — the same records as a stylist's week and as a board grouped by state.
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/bookings-calendar.png" alt="Week calendar of salon bookings coloured by staff member"/></td>
+<td width="50%"><img src="docs/screenshots/bookings-kanban.png" alt="Kanban board of bookings grouped by state"/></td>
+</tr>
+</table>
+
+**Loyalty ledger** — an append-only trail. Here a manual welcome bonus plus two earn entries, each linked back to the booking that produced it.
+
+<img src="docs/screenshots/loyalty-ledger.png" alt="Loyalty ledger listing an adjustment and two earn entries linked to bookings" width="100%"/>
+
+**Reporting** — the graph and pivot views over booking volume, revenue and loyalty output by staff and state.
+
+<img src="docs/screenshots/reporting.png" alt="Bar chart of loyalty points earned per staff member" width="100%"/>
 
 ---
 
@@ -235,7 +268,7 @@ salon_erp/
 ├── data/              booking sequence, reminder cron
 ├── demo/              services, staff, customers and sample bookings
 ├── tests/             13 tests
-├── docs/              README banner + the script that renders it
+├── docs/              README banner, UI screenshots, asset script
 ├── docker-compose.yml Odoo 19 + PostgreSQL 16
 └── __manifest__.py
 ```

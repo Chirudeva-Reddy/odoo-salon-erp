@@ -23,8 +23,9 @@ services:
     volumes:
       - odoo-data:/var/lib/odoo
       - ./:/mnt/extra-addons/salon_erp
-    # Creates the "salon" database on first run and installs the module with demo data.
-    command: ["odoo", "--database=salon", "--init=salon_erp"]
+    # Creates the "salon" database on first run and installs the module.
+    # Odoo 19 defaults to --without-demo, so demo data is requested explicitly.
+    command: ["odoo", "--database=salon", "--init=salon_erp", "--with-demo"]
 
 volumes:
   db-data:
