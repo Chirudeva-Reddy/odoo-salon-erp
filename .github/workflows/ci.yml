@@ -39,6 +39,7 @@ jobs:
             odoo:19.0 \
             odoo --database=ci_salon \
                  --init=salon_erp \
+                 --with-demo \
                  --test-enable \
                  --test-tags=/salon_erp \
                  --stop-after-init \
