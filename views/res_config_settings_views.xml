@@ -9,7 +9,7 @@
                     <setting string="Loyalty Point Value" help="Monetary value of one loyalty point when points are redeemed.">
                         <field name="salon_point_value"/>
                     </setting>
-                    <setting string="Reminder Lead Time" help="Hours before the appointment reserved for future reminder automation.">
+                    <setting string="Reminder Lead Time" help="How far ahead of an appointment the hourly reminder job notifies the customer.">
                         <field name="salon_reminder_hours"/>
                     </setting>
                     <setting string="Operational Shortcuts" help="Open the main salon configuration records.">

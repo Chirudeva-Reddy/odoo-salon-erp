@@ -1,0 +1,31 @@
+# Repo root is the module itself, so it mounts as /mnt/extra-addons/salon_erp
+# (Odoo resolves a module by its *directory* name, which must be salon_erp).
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  odoo:
+    image: odoo:19.0
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: odoo
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./:/mnt/extra-addons/salon_erp
+    # Creates the "salon" database on first run and installs the module with demo data.
+    command: ["odoo", "--database=salon", "--init=salon_erp"]
+
+volumes:
+  db-data:
+  odoo-data:

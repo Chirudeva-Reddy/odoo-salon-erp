@@ -1,0 +1,11 @@
+<odoo>
+    <record id="cron_salon_booking_reminder" model="ir.cron">
+        <field name="name">Salon: Booking Reminders</field>
+        <field name="model_id" ref="model_salon_booking"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_booking_reminders()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

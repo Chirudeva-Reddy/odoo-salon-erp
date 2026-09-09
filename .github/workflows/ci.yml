@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  install-and-test:
+    name: Install module and run tests (Odoo 19)
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U odoo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Checkout into a directory named after the module: Odoo resolves
+          # modules by directory name, not by manifest.
+          path: salon_erp
+
+      - name: Install salon_erp and run its test suite
+        run: |
+          docker run --rm --network host \
+            -e HOST=127.0.0.1 -e PORT=5432 -e USER=odoo -e PASSWORD=odoo \
+            -v "${{ github.workspace }}/salon_erp:/mnt/extra-addons/salon_erp:ro" \
+            odoo:19.0 \
+            odoo --database=ci_salon \
+                 --init=salon_erp \
+                 --test-enable \
+                 --stop-after-init \
+                 --log-level=test \
+                 --max-cron-threads=0

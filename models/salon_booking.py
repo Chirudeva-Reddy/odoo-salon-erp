@@ -61,6 +61,7 @@ class SalonBooking(models.Model):
     payment_ref = fields.Char(copy=False)
     loyalty_points_redeemed = fields.Integer(default=0, tracking=True)
     loyalty_points_earned = fields.Integer(compute="_compute_loyalty_points_earned", store=True)
+    reminder_sent = fields.Boolean(default=False, copy=False, readonly=True)
     cancel_reason = fields.Text(copy=False)
     canceled_at = fields.Datetime(copy=False)
     note = fields.Text()
@@ -126,6 +127,12 @@ class SalonBooking(models.Model):
                 vals["name"] = sequence.next_by_code("salon.booking") or _("New")
         return super().create(vals_list)
 
+    def write(self, vals):
+        # A rescheduled booking must be reminded about again.
+        if "start_dt" in vals and "reminder_sent" not in vals:
+            vals = dict(vals, reminder_sent=False)
+        return super().write(vals)
+
     @api.constrains("staff_id", "company_id")
     def _check_staff_company(self):
         for booking in self:
@@ -158,7 +165,9 @@ class SalonBooking(models.Model):
                 ("start_dt", "<", booking.end_dt),
                 ("end_dt", ">", booking.start_dt),
             ]
-            if self.search_count(overlap_domain):
+            # sudo: record rules hide other staff's/company's bookings from the
+            # current user, which would make a real conflict look free.
+            if self.sudo().search_count(overlap_domain):
                 raise ValidationError(
                     _("Booking conflict: the selected staff member is already booked during this time.")
                 )
@@ -292,6 +301,11 @@ class SalonBooking(models.Model):
         return True
 
     def action_mark_paid(self):
+        for booking in self:
+            if booking.state in ("canceled", "no_show"):
+                raise UserError(_("Canceled and no-show bookings cannot be marked as paid."))
+            if booking.payment_state != "unpaid":
+                raise UserError(_("Only unpaid bookings can be marked as paid."))
         self.write({"payment_state": "paid"})
         self._earn_loyalty_points()
         for booking in self:
@@ -307,6 +321,35 @@ class SalonBooking(models.Model):
         for booking in self:
             booking.message_post(body=_("Payment marked as refunded."))
         return True
+
+    @api.model
+    def _cron_send_booking_reminders(self):
+        """Notify customers of confirmed bookings starting within the lead time."""
+        hours = int(
+            self.env["ir.config_parameter"].sudo().get_param("salon_erp.reminder_hours", default=24)
+        )
+        now = fields.Datetime.now()
+        bookings = self.search(
+            [
+                ("state", "=", "confirmed"),
+                ("reminder_sent", "=", False),
+                ("start_dt", ">=", now),
+                ("start_dt", "<=", fields.Datetime.add(now, hours=hours)),
+            ]
+        )
+        for booking in bookings:
+            booking.message_post(
+                body=_(
+                    "Reminder: appointment %(name)s with %(staff)s starts on %(start)s.",
+                    name=booking.name,
+                    staff=booking.staff_id.name,
+                    start=fields.Datetime.to_string(booking.start_dt),
+                ),
+                partner_ids=booking.partner_id.ids,
+                subtype_xmlid="mail.mt_comment",
+            )
+        bookings.reminder_sent = True
+        return len(bookings)
 
     def action_view_loyalty_ledger(self):
         self.ensure_one()
