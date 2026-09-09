@@ -184,6 +184,66 @@ def frame(i):
     return img.resize((W // S, H // S), Image.LANCZOS)
 
 
+def make_hero_banner():
+    """Wide static README hero: wordmark, strapline, spec pills, scissors mark."""
+    k = 2
+    w, h = 1280 * k, 340 * k
+    img = Image.new("RGB", (w, h))
+    d = ImageDraw.Draw(img)
+    for y in range(h):
+        d.line([(0, y), (w, y)], fill=lerp((42, 27, 39), (18, 13, 22), y / h))
+
+    # Soft brand glow behind the right-hand mark.
+    glow = Image.new("RGB", (w, h), (0, 0, 0))
+    ImageDraw.Draw(glow).ellipse(
+        [w - 620 * k, -220 * k, w + 180 * k, h + 180 * k], fill=(96, 58, 88)
+    )
+    img = Image.blend(img, glow.filter(ImageFilter.GaussianBlur(120 * k)), 0.5)
+    d = ImageDraw.Draw(img)
+
+    # Oversized scissors mark, bleeding off the right edge.
+    mark = Image.new("L", (w, h), 0)
+    md = ImageDraw.Draw(mark)
+    cx, cy, sc = 1105 * k, 170 * k, 2.45 * k
+    px = lambda x, y: (cx + (x - 70) * sc, cy + (y - 70) * sc)
+    for a, b in (((55, 93), (101, 29)), ((85, 93), (39, 29))):
+        md.line([px(*a), px(*b)], fill=90, width=int(8 * sc))
+        for pt in (a, b):
+            r = 4 * sc
+            x, y = px(*pt)
+            md.ellipse([x - r, y - r, x + r, y + r], fill=90)
+    for ox in (42, 98):
+        x, y = px(ox, 106)
+        r = 18 * sc
+        md.ellipse([x - r, y - r, x + r, y + r], outline=90, width=int(7 * sc))
+    img.paste(Image.new("RGB", (w, h), (255, 255, 255)), mask=mark)
+    d = ImageDraw.Draw(img)
+
+    d.text((72 * k, 88 * k), "Salon ERP", font=ImageFont.truetype(FONT, 62 * k, index=BOLD), fill=INK)
+    d.text(
+        (76 * k, 168 * k),
+        "Appointments  ·  Staff scheduling  ·  Service catalogue  ·  Loyalty ledger",
+        font=ImageFont.truetype(FONT, 17 * k, index=MEDIUM),
+        fill=(178, 156, 172),
+    )
+    x = 74 * k
+    f = ImageFont.truetype(FONT, 11 * k, index=BOLD)
+    for text, fg, bg in (
+        ("ODOO 19.0", LILAC, (62, 40, 58)),
+        ("PYTHON 3.12+", (168, 190, 210), (38, 46, 58)),
+        ("MULTI-COMPANY", (150, 200, 178), (30, 50, 43)),
+        ("LGPL-3", MUTED, (44, 33, 46)),
+    ):
+        tw = d.textlength(text, font=f) + 26 * k
+        d.rounded_rectangle([x, 212 * k, x + tw, 240 * k], radius=14 * k, fill=bg)
+        d.text((x + 13 * k, 219 * k), text, font=f, fill=fg)
+        x += tw + 10 * k
+
+    out = pathlib.Path(__file__).parent / "banner.png"
+    img.resize((w // k, h // k), Image.LANCZOS).save(out, optimize=True)
+    print(out.name, out.stat().st_size // 1024, "KB")
+
+
 def make_icon():
     """Odoo Apps tile: scissors on the brand purple."""
     k, size = 6, 140  # k = supersampling
@@ -221,6 +281,7 @@ def make_icon():
 
 
 def main():
+    make_hero_banner()
     make_icon()
     out = pathlib.Path(__file__).parent / "salon-erp.gif"
     with tempfile.TemporaryDirectory() as tmp:
