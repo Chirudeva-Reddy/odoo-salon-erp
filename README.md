@@ -208,16 +208,17 @@ Two record rules apply on top:
 
 ## Tests
 
-12 tests across three suites — booking conflicts and record-rule visibility, loyalty arithmetic, and reminder/payment guards.
+13 tests across three suites — booking conflicts and record-rule visibility, loyalty arithmetic, and reminder/payment guards.
 
 ```bash
-docker compose run --rm odoo odoo -d test_salon -i salon_erp --test-enable --stop-after-init --max-cron-threads=0
+docker compose run --rm odoo odoo -d test_salon -i salon_erp \
+  --test-enable --test-tags=/salon_erp --stop-after-init --max-cron-threads=0
 ```
 
 Against a local checkout:
 
 ```bash
-./odoo-bin -c odoo.conf -d test_salon -i salon_erp --test-enable --stop-after-init
+./odoo-bin -c odoo.conf -d test_salon -i salon_erp --test-enable --test-tags=/salon_erp --stop-after-init
 ```
 
 CI runs exactly this on every push, installing the module into a clean `odoo:19.0` container against PostgreSQL 16.
@@ -233,7 +234,7 @@ salon_erp/
 ├── security/          groups, record rules, model ACLs
 ├── data/              booking sequence, reminder cron
 ├── demo/              services, staff, customers and sample bookings
-├── tests/             12 tests
+├── tests/             13 tests
 ├── docs/              README banner + the script that renders it
 ├── docker-compose.yml Odoo 19 + PostgreSQL 16
 └── __manifest__.py

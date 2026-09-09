@@ -1,5 +1,5 @@
 from odoo import Command
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase
 
 
@@ -100,3 +100,22 @@ class TestSalonLoyaltyRules(TransactionCase):
         self.assertEqual(len(refund_entries), 1)
         self.assertEqual(refund_entries.points, -20)
         self.assertEqual(self.partner.salon_loyalty_balance, 0)
+
+    def test_ledger_is_append_only_but_empty_recordsets_are_noops(self):
+        entry = self.env["salon.loyalty.ledger"].sudo().create(
+            {
+                "company_id": self.company.id,
+                "partner_id": self.partner.id,
+                "points": 5,
+                "reason": "adjust",
+            }
+        )
+        with self.assertRaises(UserError):
+            entry.write({"points": 6})
+        with self.assertRaises(UserError):
+            entry.unlink()
+
+        # The ORM calls both on empty recordsets; they must succeed there.
+        empty = self.env["salon.loyalty.ledger"]
+        self.assertTrue(empty.write({"points": 6}))
+        self.assertTrue(empty.unlink())

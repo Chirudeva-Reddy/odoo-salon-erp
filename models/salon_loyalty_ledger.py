@@ -41,10 +41,16 @@ class SalonLoyaltyLedger(models.Model):
         return entries
 
     def write(self, vals):
-        raise UserError(_("Loyalty ledger entries cannot be modified."))
+        # An empty recordset must stay a no-op: the ORM calls write()/unlink()
+        # on empty sets as a matter of course, and raising there breaks it.
+        if self:
+            raise UserError(_("Loyalty ledger entries cannot be modified."))
+        return super().write(vals)
 
     def unlink(self):
-        raise UserError(_("Loyalty ledger entries cannot be deleted."))
+        if self:
+            raise UserError(_("Loyalty ledger entries cannot be deleted."))
+        return super().unlink()
 
     def _invalidate_related_caches(self):
         partners = self.partner_id

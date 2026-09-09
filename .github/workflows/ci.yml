@@ -40,6 +40,7 @@ jobs:
             odoo --database=ci_salon \
                  --init=salon_erp \
                  --test-enable \
+                 --test-tags=/salon_erp \
                  --stop-after-init \
                  --log-level=test \
                  --max-cron-threads=0
